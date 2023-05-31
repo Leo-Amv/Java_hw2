@@ -15,26 +15,25 @@ public class Main {
     private static int fieldSizeY; // Размерность поля
 
     public static void main(String[] args) {
-        System.out.println("Hello world!");
         initialize();
         printField();
-        while (true){
+        while (true) {
             humanTurn();
             printField();
-            if (gameCheck(DOT_HUMAN,"YOU WIN!")){
+            if (gameCheck(DOT_HUMAN, "YOU WIN!")) {
                 break;
             }
             aiTurn();
             printField();
-            if (gameCheck(DOT_AI,"BOT WIN!")){
+            if (gameCheck(DOT_AI, "BOT WIN!")) {
                 break;
             }
         }
     }
 
     private static void initialize() {
-        fieldSizeY = 3;
-        fieldSizeX = 3;
+        fieldSizeY = 5;
+        fieldSizeX = 5;
         field = new char[fieldSizeX][fieldSizeY];
         for (int x = 0; x < fieldSizeX; x++) {
             for (int y = 0; y < fieldSizeY; y++) {
@@ -65,7 +64,7 @@ public class Main {
     private static void humanTurn() {
         int x, y;
         do {
-            System.out.print("Enter coordinates X Y from 1 to 3");
+            System.out.print("Enter coordinates X Y from 1 to 5");
             x = SCANNER.nextInt() - 1;
             y = SCANNER.nextInt() - 1;
         }
@@ -81,7 +80,7 @@ public class Main {
         return x >= 0 && x < fieldSizeX && y >= 0 && y < fieldSizeY;
     }
 
-    private static void aiTurn(){
+    private static void aiTurn() {
         int x, y;
         do {
             x = random.nextInt(fieldSizeX);
@@ -91,38 +90,82 @@ public class Main {
         field[x][y] = DOT_AI;
     }
 
-    static boolean checkWin(char c){
-        if (field[0][0] == c && field[0][1] == c && field[0][2] == c) return true;
-        if (field[1][0] == c && field[1][1] == c && field[1][2] == c) return true;
-        if (field[2][0] == c && field[2][1] == c && field[2][2] == c) return true;
-
-        if (field[0][0] == c && field[1][1] == c && field[2][2] == c) return true;
-        if (field[0][2] == c && field[1][1] == c && field[2][0] == c) return true;
-
-        if (field[0][0] == c && field[1][0] == c && field[2][0] == c) return true;
-        if (field[0][1] == c && field[1][1] == c && field[2][1] == c) return true;
-        if (field[0][2] == c && field[1][2] == c && field[2][2] == c) return true;
+    static boolean checkWin(char c) {
+        for (int x = 0; x < fieldSizeX; x++) {
+            for (int y = 0; y < fieldSizeY; y++) {
+                if (field[x][y] != DOT_EMPTY) {
+                    char checkpoint = field[x][y];
+                    int n = x;
+                    int m = y;
+                    int count = 0;
+                    while (m < fieldSizeY) {
+                        if (field[n][m] == checkpoint && isCellValid(n, m)) {
+                            count++;
+                        }else break;
+                        m++;
+                    }
+                    if (count == WIN_COUNT) return true;
+                    n = x;
+                    m = y;
+                    count = 0;
+                    while (m < fieldSizeY && n < fieldSizeX) {
+                        if (field[n][m] == checkpoint && isCellValid(n, m)) {
+                            count++;
+                        }else break;
+                        n++;
+                        m++;
+                    }
+                    if (count == WIN_COUNT) return true;
+                    n = x;
+                    m = y;
+                    count = 0;
+                    while (n < fieldSizeX) {
+                        if (field[n][m] == checkpoint && isCellValid(n, m)) {
+                            count++;
+                        }else break;
+                        n++;
+                    }
+                    if (count == WIN_COUNT) return true;
+                    n = x;
+                    m = y;
+                    count = 0;
+                    while (n < fieldSizeX && m >= 0) {
+                        if (field[n][m] == checkpoint && isCellValid(n, m)) {
+                            count++;
+                        }else break;
+                        n++;
+                        m--;
+                    }
+                    if (count == WIN_COUNT) return true;
+                }
+            }
+        }
         return false;
     }
 
-    static boolean checkDraw(){
+    static boolean checkDraw() {
         for (int x = 0; x < fieldSizeX; x++) {
             for (int y = 0; y < fieldSizeY; y++) {
-                if (isCellEmpty(x,y)) return false;
+                if (isCellEmpty(x, y)) return false;
             }
         }
         return true;
     }
 
-    static boolean gameCheck(char c, String str){
-        if (checkWin(c)){
+    static boolean gameCheck(char c, String str) {
+        if (checkWin(c)) {
             System.out.println(str);
             return true;
         }
-        if (checkDraw()){
+        if (checkDraw()) {
             System.out.println("Draw!");
             return true;
         }
         return false; // Игра продолжается
+    }
+
+    static char[][] copyField(char[][] srcField) {
+        char[][] newField = srcField.clone();
+        return newField;
     }
 }
