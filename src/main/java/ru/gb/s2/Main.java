@@ -19,11 +19,13 @@ public class Main {
         printField();
         while (true) {
             humanTurn();
+            System.out.println();
             printField();
             if (gameCheck(DOT_HUMAN, "YOU WIN!")) {
                 break;
             }
             aiTurn();
+            System.out.println();
             printField();
             if (gameCheck(DOT_AI, "BOT WIN!")) {
                 break;
@@ -64,7 +66,7 @@ public class Main {
     private static void humanTurn() {
         int x, y;
         do {
-            System.out.print("Enter coordinates X Y from 1 to 5");
+            System.out.println("Enter coordinates X Y from 1 to 5");
             x = SCANNER.nextInt() - 1;
             y = SCANNER.nextInt() - 1;
         }
@@ -90,53 +92,52 @@ public class Main {
         field[x][y] = DOT_AI;
     }
 
-    static boolean checkWin(char c) {
+    static boolean checkWin(char c, int winCount,char[][]board) {
         for (int x = 0; x < fieldSizeX; x++) {
             for (int y = 0; y < fieldSizeY; y++) {
-                if (field[x][y] != DOT_EMPTY) {
-                    char checkpoint = field[x][y];
+                if (board[x][y] != DOT_EMPTY) {
                     int n = x;
                     int m = y;
                     int count = 0;
                     while (m < fieldSizeY) {
-                        if (field[n][m] == checkpoint && isCellValid(n, m)) {
+                        if (board[n][m] == c && isCellValid(n, m)) {
                             count++;
                         }else break;
                         m++;
                     }
-                    if (count == WIN_COUNT) return true;
+                    if (count == winCount) return true;
                     n = x;
                     m = y;
                     count = 0;
                     while (m < fieldSizeY && n < fieldSizeX) {
-                        if (field[n][m] == checkpoint && isCellValid(n, m)) {
+                        if (board[n][m] == c && isCellValid(n, m)) {
                             count++;
                         }else break;
                         n++;
                         m++;
                     }
-                    if (count == WIN_COUNT) return true;
+                    if (count == winCount) return true;
                     n = x;
                     m = y;
                     count = 0;
                     while (n < fieldSizeX) {
-                        if (field[n][m] == checkpoint && isCellValid(n, m)) {
+                        if (board[n][m] == c && isCellValid(n, m)) {
                             count++;
                         }else break;
                         n++;
                     }
-                    if (count == WIN_COUNT) return true;
+                    if (count == winCount) return true;
                     n = x;
                     m = y;
                     count = 0;
                     while (n < fieldSizeX && m >= 0) {
-                        if (field[n][m] == checkpoint && isCellValid(n, m)) {
+                        if (board[n][m] == c && isCellValid(n, m)) {
                             count++;
                         }else break;
                         n++;
                         m--;
                     }
-                    if (count == WIN_COUNT) return true;
+                    if (count == winCount) return true;
                 }
             }
         }
@@ -153,7 +154,7 @@ public class Main {
     }
 
     static boolean gameCheck(char c, String str) {
-        if (checkWin(c)) {
+        if (checkWin(c,WIN_COUNT,field)) {
             System.out.println(str);
             return true;
         }
@@ -164,8 +165,17 @@ public class Main {
         return false; // Игра продолжается
     }
 
-    static char[][] copyField(char[][] srcField) {
-        char[][] newField = srcField.clone();
-        return newField;
+    private static void mediumAi(){
+        char[][] copy = field.clone();
+        int x, y;
+        do {
+            x = random.nextInt(fieldSizeX);
+            y = random.nextInt(fieldSizeY);
+        }
+        while (!isCellEmpty(x, y));
+        if (checkWin(DOT_HUMAN,WIN_COUNT-1,copy)){
+            // TODO: 31.05.2023 найти нужный ход, в случае обнаружения 3-х фишек противника подряд! 
+        }
+        field[x][y] = DOT_AI;
     }
 }
